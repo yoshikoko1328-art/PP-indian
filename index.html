@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インド神話・民間伝承大鑑 (Indian Mythology & Folklore)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Shippori+Mincho:wght@400;600;800&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        parchment: {
+                            50: '#FDFBF7',
+                            100: '#FAF6EE',
+                            200: '#F8F1E5',
+                            300: '#EFE2C6',
+                            400: '#C8963E',
+                            500: '#A67323',
+                            600: '#8C4303',
+                            700: '#6B3100',
+                            800: '#3D2B1F',
+                            900: '#1C1512',
+                        },
+                        terracotta: '#8C4303',
+                        indianGold: '#C8963E',
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        mincho: ['Shippori Mincho', 'Zen Old Mincho', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FAF6EE;
+            color: #3D2B1F;
+            font-family: 'Shippori Mincho', 'Zen Old Mincho', Georgia, serif;
+            overflow-x: hidden;
+        }
+
+        .parchment-bg {
+            background-color: #FAF6EE;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(248, 241, 229, 0.5) 0%, rgba(239, 226, 198, 0.2) 70%, rgba(140, 67, 3, 0.2) 100%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
+        }
+
+        .antique-border {
+            border: 2px solid #8C4303;
+            box-shadow: inset 0 0 15px rgba(140, 67, 3, 0.15), 0 4px 20px rgba(61, 43, 31, 0.12);
+        }
+
+        .map-container {
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .map-container:active {
+            cursor: grabbing;
+        }
+
+        .region-path {
+            transition: all 0.3s ease;
+            fill: #EFE2C6;
+            stroke: #8C4303;
+            stroke-width: 1.5;
+            stroke-dasharray: 4, 2;
+        }
+
+        .region-path:hover, .region-path.active {
+            fill: #C8963E;
+            fill-opacity: 0.45;
+            stroke: #6B3100;
+            stroke-width: 2.5;
+            stroke-dasharray: none;
+            filter: drop-shadow(0px 0px 8px rgba(140, 67, 3, 0.35));
+        }
+
+        .pin-hover {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pin-hover:hover {
+            transform: scale(1.3) translateY(-4px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF6EE;
+            border-left: 1px solid #C8963E;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C8963E;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8C4303;
+        }
+    </style>
+</head>
+<body class="parchment-bg min-h-screen flex flex-col antialiased selection:bg-indianGold selection:text-white">
+
+    <!-- Navigation / Header -->
+    <header class="border-b-2 border-terracotta bg-parchment-100/90 backdrop-blur-md sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-terracotta flex items-center justify-center text-parchment-100 shadow-md border border-indianGold">
+                    <i class="fa-solid font-cinzel fa-om text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl md:text-2xl text-parchment-800 tracking-wide font-mincho">インド神話・民間伝承大鑑</h1>
+                    <p class="text-xs text-parchment-600 tracking-widest font-cinzel uppercase">Compendium of Indian Mythology & Folklore</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button id="toggleViewBtn" onclick="toggleViewMode()" class="px-3 py-1.5 rounded-lg border border-terracotta bg-parchment-200 hover:bg-parchment-300 text-parchment-800 text-xs md:text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <span id="viewBtnText">リスト一覧表示</span>
+                </button>
+                <button onclick="openBibModal()" class="px-3 py-1.5 rounded-lg border border-terracotta bg-parchment-200 hover:bg-parchment-300 text-parchment-800 text-xs md:text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span>参考文献</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col lg:flex-row relative overflow-hidden max-w-[1920px] mx-auto w-full">
+        
+        <!-- MAP SECTION -->
+        <div id="mapViewContainer" class="flex-1 relative min-h-[500px] lg:min-h-[calc(100vh-65px)] flex flex-col items-center justify-center p-2 md:p-6 overflow-hidden">
+            
+            <!-- Floating Map Controls -->
+            <div class="absolute top-4 left-4 z-20 flex flex-col gap-2 bg-parchment-100/90 p-2 rounded-xl border border-terracotta/40 shadow-lg backdrop-blur">
+                <button onclick="zoomMap(1.2)" class="w-9 h-9 rounded-lg bg-parchment-200 hover:bg-parchment-300 border border-terracotta text-parchment-800 font-bold flex items-center justify-center transition" title="拡大">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                <button onclick="zoomMap(0.8)" class="w-9 h-9 rounded-lg bg-parchment-200 hover:bg-parchment-300 border border-terracotta text-parchment-800 font-bold flex items-center justify-center transition" title="縮小">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+                <button onclick="resetMapTransform()" class="w-9 h-9 rounded-lg bg-parchment-200 hover:bg-parchment-300 border border-terracotta text-parchment-800 flex items-center justify-center transition" title="リセット">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <!-- Region Legend / Quick Selector -->
+            <div class="absolute top-4 right-4 z-20 hidden md:flex flex-col gap-1.5 bg-parchment-100/90 p-3 rounded-xl border border-terracotta/40 shadow-lg backdrop-blur max-w-xs text-xs">
+                <span class="font-bold text-terracotta border-b border-terracotta/30 pb-1 mb-1 font-mincho">地域を選択 (6地方)</span>
+                <button onclick="selectRegion('all')" class="text-left px-2 py-1 rounded hover:bg-parchment-200 flex items-center justify-between gap-2 font-bold text-terracotta">
+                    <span><i class="fa-solid fa-globe"></i> 全地域を表示</span>
+                    <span class="text-[10px] bg-parchment-300 text-parchment-800 px-1.5 rounded-full font-sans">60説話</span>
+                </button>
+                <button onclick="selectRegion('north')" class="text-left px-2 py-1 rounded hover:bg-parchment-200 flex items-center justify-between gap-2">
+                    <span><i class="fa-solid fa-compass text-amber-700"></i> 北インド</span>
+                    <span class="text-[10px] bg-amber-200 text-amber-900 px-1.5 rounded-full font-sans">10説話</span>
+                </button>
+                <button onclick="selectRegion('central')" class="text-left px-2 py-1 rounded hover:bg-parchment-200 flex items-center justify-between gap-2">
+                    <span><i class="fa-solid fa-compass text-orange-700"></i> 中央インド</span>
+                    <span class="text-[10px] bg-orange-200 text-orange-900 px-1.5 rounded-full font-sans">10説話</span>
+                </button>
+                <button onclick="selectRegion('east')" class="text-left px-2 py-1 rounded hover:bg-parchment-200 flex items-center justify-between gap-2">
+                    <span><i class="fa-solid fa-compass text-emerald-700"></i> 東インド</span>
+                    <span class="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 rounded-full font-sans">10説話</span>
+                </button>
+                <button onclick="selectRegion('northeast')" class="text-left px-2 py-1 rounded hover:bg-parchment-200 flex items-center justify-between gap-2">
+                    <span><i class="fa-solid fa-compass text-teal-700"></i> 北東部インド</span>
+                    <span class="text-[10px] bg-teal-200 text-teal-900 px-1.5 rounded-full font-sans">10説話</span>
+                </button>
+                <button onclick="selectRegion('west')" class="text-left px-2 py-1 rounded hover:bg-parchment-200 flex items-center justify-between gap-2">
+                    <span><i class="fa-solid fa-compass text-red-700"></i> 西インド</span>
+                    <span class="text-[10px] bg-red-200 text-red-900 px-1.5 rounded-full font-sans">10説話</span>
+                </button>
+                <button onclick="selectRegion('south')" class="text-left px-2 py-1 rounded hover:bg-parchment-200 flex items-center justify-between gap-2">
+                    <span><i class="fa-solid fa-compass text-indigo-700"></i> 南インド</span>
+                    <span class="text-[10px] bg-indigo-200 text-indigo-900 px-1.5 rounded-full font-sans">10説話</span>
+                </button>
+            </div>
+
+            <!-- Antique Map Container -->
+            <div id="mapViewport" class="w-full h-[650px] lg:h-[calc(100vh-100px)] relative antique-border rounded-2xl overflow-hidden shadow-2xl parchment-bg map-container border-4 border-terracotta">
+                
+                <svg id="svgMap" class="w-full h-full" viewBox="0 0 1000 900" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Map Graticules / Grid Lines -->
+                    <g stroke="#8C4303" stroke-width="0.3" stroke-dasharray="3,3" opacity="0.3">
+                        <line x1="0" y1="150" x2="1000" y2="150"/>
+                        <line x1="0" y1="300" x2="1000" y2="300"/>
+                        <line x1="0" y1="450" x2="1000" y2="450"/>
+                        <line x1="0" y1="600" x2="1000" y2="600"/>
+                        <line x1="0" y1="750" x2="1000" y2="750"/>
+                        <line x1="200" y1="0" x2="200" y2="900"/>
+                        <line x1="400" y1="0" x2="400" y2="900"/>
+                        <line x1="600" y1="0" x2="600" y2="900"/>
+                        <line x1="800" y1="0" x2="800" y2="900"/>
+                    </g>
+
+                    <!-- Group for Zoom/Pan Transform -->
+                    <g id="mapGroup">
+                        <!-- Ocean Waves Detail -->
+                        <path d="M 50,700 Q 80,690 110,700 T 170,700 M 70,750 Q 100,740 130,750" stroke="#A67323" stroke-width="0.8" fill="none" opacity="0.4"/>
+                        <path d="M 750,750 Q 780,740 810,750 T 870,750 M 800,800 Q 830,790 860,800" stroke="#A67323" stroke-width="0.8" fill="none" opacity="0.4"/>
+
+                        <!-- REGIONS PATHS -->
+                        <!-- 1. North India (北インド) -->
+                        <g id="region-north" class="region-group" onclick="selectRegion('north')">
+                            <path class="region-path" d="M 280,100 L 420,80 L 480,120 L 520,200 L 440,280 L 320,290 L 260,220 Z"/>
+                            <text x="370" y="190" text-anchor="middle" font-family="Shippori Mincho" font-weight="bold" font-size="22" fill="#6B3100" pointer-events="none">北インド</text>
+                        </g>
+
+                        <!-- 2. Central India (中央インド) -->
+                        <g id="region-central" class="region-group" onclick="selectRegion('central')">
+                            <path class="region-path" d="M 320,290 L 440,280 L 530,310 L 580,410 L 450,470 L 310,410 Z"/>
+                            <text x="430" y="380" text-anchor="middle" font-family="Shippori Mincho" font-weight="bold" font-size="22" fill="#6B3100" pointer-events="none">中央インド</text>
+                        </g>
+
+                        <!-- 3. East India (東インド) -->
+                        <g id="region-east" class="region-group" onclick="selectRegion('east')">
+                            <path class="region-path" d="M 520,200 L 600,240 L 670,290 L 660,420 L 580,410 L 530,310 L 440,280 Z"/>
+                            <text x="580" y="320" text-anchor="middle" font-family="Shippori Mincho" font-weight="bold" font-size="22" fill="#6B3100" pointer-events="none">東インド</text>
+                        </g>
+
+                        <!-- 4. North-East India (北東部インド) -->
+                        <g id="region-northeast" class="region-group" onclick="selectRegion('northeast')">
+                            <path class="region-path" d="M 670,290 L 800,220 L 880,260 L 850,370 L 730,380 L 670,330 Z"/>
+                            <text x="760" y="300" text-anchor="middle" font-family="Shippori Mincho" font-weight="bold" font-size="20" fill="#6B3100" pointer-events="none">北東部インド</text>
+                        </g>
+
+                        <!-- 5. West India (西インド) -->
+                        <g id="region-west" class="region-group" onclick="selectRegion('west')">
+                            <path class="region-path" d="M 180,260 L 260,220 L 320,290 L 310,410 L 450,470 L 350,560 L 240,480 L 190,380 Z"/>
+                            <text x="270" y="370" text-anchor="middle" font-family="Shippori Mincho" font-weight="bold" font-size="22" fill="#6B3100" pointer-events="none">西インド</text>
+                        </g>
+
+                        <!-- 6. South India (南インド) -->
+                        <g id="region-south" class="region-group" onclick="selectRegion('south')">
+                            <path class="region-path" d="M 350,560 L 450,470 L 580,410 L 540,580 L 440,750 L 380,680 Z"/>
+                            <text x="440" y="600" text-anchor="middle" font-family="Shippori Mincho" font-weight="bold" font-size="22" fill="#6B3100" pointer-events="none">南インド</text>
+                        </g>
+
+                        <!-- MAP PINS LAYER -->
+                        <g id="pinsGroup">
+                            <!-- Dynamically generated markers -->
+                        </g>
+                    </g>
+
+                    <!-- Decorative Compass Rose (Top Right) -->
+                    <g transform="translate(880, 100) scale(0.7)" opacity="0.75" pointer-events="none">
+                        <circle cx="0" cy="0" r="50" fill="none" stroke="#8C4303" stroke-width="2"/>
+                        <circle cx="0" cy="0" r="44" fill="none" stroke="#8C4303" stroke-width="1" stroke-dasharray="2,2"/>
+                        <polygon points="0,-60 10,-10 0,0 -10,-10" fill="#8C4303"/>
+                        <polygon points="0,-60 0,0 -10,-10" fill="#C8963E"/>
+                        <polygon points="0,60 10,10 0,0 -10,10" fill="#8C4303"/>
+                        <polygon points="60,0 10,10 0,0 10,-10" fill="#8C4303"/>
+                        <polygon points="-60,0 -10,10 0,0 -10,-10" fill="#8C4303"/>
+                        <text x="0" y="-68" text-anchor="middle" font-family="Cinzel" font-weight="bold" font-size="18" fill="#8C4303">N</text>
+                        <text x="0" y="80" text-anchor="middle" font-family="Cinzel" font-weight="bold" font-size="16" fill="#8C4303">S</text>
+                        <text x="78" y="5" text-anchor="middle" font-family="Cinzel" font-weight="bold" font-size="16" fill="#8C4303">E</text>
+                        <text x="-78" y="5" text-anchor="middle" font-family="Cinzel" font-weight="bold" font-size="16" fill="#8C4303">W</text>
+                    </g>
+
+                    <!-- Updated Vintage Cartouche / Map Title (Without Tenjiku Shinma) -->
+                    <g transform="translate(70, 70)" pointer-events="none">
+                        <rect x="0" y="0" width="230" height="90" rx="8" fill="#FAF6EE" opacity="0.92" stroke="#8C4303" stroke-width="2"/>
+                        <rect x="4" y="4" width="222" height="82" rx="6" fill="none" stroke="#C8963E" stroke-width="1"/>
+                        <text x="115" y="32" text-anchor="middle" font-family="Shippori Mincho" font-weight="bold" font-size="17" fill="#3D2B1F">インド神話・妖怪伝承図</text>
+                        <text x="115" y="52" text-anchor="middle" font-family="Cinzel" font-size="10" fill="#8C4303" letter-spacing="2">MYTHOLOGY & FOLKLORE</text>
+                        <text x="115" y="70" text-anchor="middle" font-family="Shippori Mincho" font-size="11" fill="#6B3100">※ 地域をタップして伝承を閲覧</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- SIDE PANEL / DRAWER FOR DETAILS & SEARCH -->
+        <aside id="sidePanel" class="w-full lg:w-[480px] bg-parchment-100 border-t-2 lg:border-t-0 lg:border-l-2 border-terracotta flex flex-col h-[600px] lg:h-[calc(100vh-65px)] z-20 shadow-xl transition-all">
+            
+            <!-- Panel Header & Search -->
+            <div class="p-4 border-b border-terracotta/30 bg-parchment-200/50 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-terracotta text-lg"></i>
+                        <h2 id="currentRegionTitle" class="font-bold text-lg text-parchment-800 font-mincho">すべての地域説話 (60選)</h2>
+                    </div>
+                    <span id="resultCount" class="text-xs bg-parchment-300 text-terracotta font-bold px-2.5 py-1 rounded-full border border-terracotta/40">60件</span>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="名前、場所、キーワードで検索..." 
+                           class="w-full pl-9 pr-4 py-2 bg-parchment-50 border border-terracotta/50 rounded-lg text-sm text-parchment-800 placeholder-parchment-500 focus:outline-none focus:ring-2 focus:ring-terracotta">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-parchment-500 text-sm"></i>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="flex gap-2 text-xs">
+                    <button id="filter-all" onclick="setCategoryFilter('all')" class="flex-1 py-1.5 px-3 rounded-lg border border-terracotta bg-terracotta text-white font-bold transition">すべて</button>
+                    <button id="filter-yokai" onclick="setCategoryFilter('妖怪')" class="flex-1 py-1.5 px-3 rounded-lg border border-terracotta/40 bg-parchment-50 text-parchment-800 hover:bg-parchment-200 font-bold transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-ghost text-purple-700"></i> 妖怪・怪異
+                    </button>
+                    <button id="filter-god" onclick="setCategoryFilter('神様')" class="flex-1 py-1.5 px-3 rounded-lg border border-terracotta/40 bg-parchment-50 text-parchment-800 hover:bg-parchment-200 font-bold transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-sun text-amber-600"></i> 神様・聖者
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cards Scrollable Area -->
+            <div id="cardsContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Dynamically Populated Cards -->
+            </div>
+        </aside>
+    </main>
+
+    <!-- BIBLIOGRAPHY MODAL (参考文献) -->
+    <div id="bibModal" class="fixed inset-0 bg-parchment-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-parchment-100 border-2 border-terracotta rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeBibModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-parchment-200 hover:bg-parchment-300 border border-terracotta text-parchment-800 flex items-center justify-center font-bold">
+                ✕
+            </button>
+
+            <div class="flex items-center gap-3 border-b-2 border-terracotta/40 pb-3 mb-4">
+                <i class="fa-solid fa-book-atlas text-2xl text-terracotta"></i>
+                <div>
+                    <h3 class="text-xl font-bold text-parchment-800 font-mincho">参考文献・資料出典</h3>
+                    <p class="text-xs text-parchment-600">References & Bibliographical Source Documentation</p>
+                </div>
+            </div>
+
+            <div class="space-y-6 text-sm">
+                <!-- Books Section -->
+                <div>
+                    <h4 class="font-bold text-terracotta mb-2 border-l-4 border-terracotta pl-2 flex items-center gap-2">
+                        <i class="fa-solid fa-book"></i> 本 (Books)
+                    </h4>
+                    <ul class="space-y-2 pl-2">
+                        <li class="bg-parchment-200/50 p-2.5 rounded-lg border border-terracotta/30">
+                            <span class="font-bold text-parchment-800">沖浦和光</span>、『インドの神々と魔族』、2005年4月20日、<span class="text-xs text-parchment-600">参照日：2026年9月18日</span>
+                        </li>
+                        <li class="bg-parchment-200/50 p-2.5 rounded-lg border border-terracotta/30">
+                            <span class="font-bold text-parchment-800">菅沼晃</span>、『インド神話伝説辞典』、1985年3月15日、<span class="text-xs text-parchment-600">参照日：2026年9月18日</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Web Sources Section -->
+                <div>
+                    <h4 class="font-bold text-terracotta mb-2 border-l-4 border-terracotta pl-2 flex items-center gap-2">
+                        <i class="fa-solid fa-globe"></i> サイト (Websites)
+                    </h4>
+                    <ul class="space-y-2 pl-2">
+                        <li class="bg-parchment-200/50 p-2.5 rounded-lg border border-terracotta/30">
+                            <div><span class="font-bold text-parchment-800">インド文化省</span>、「インドの伝統神話と民間伝承」、インド文化省ポータル、2021年11月10日</div>
+                            <a href="https://www.indiaculture.gov.in/" target="_blank" rel="noopener noreferrer" class="text-xs text-terracotta hover:underline break-all">https://www.indiaculture.gov.in/</a>
+                            <div class="text-[11px] text-parchment-600">参照日：2026年9月18日</div>
+                        </li>
+                        <li class="bg-parchment-200/50 p-2.5 rounded-lg border border-terracotta/30">
+                            <div><span class="font-bold text-parchment-800">アミット・ガーグ</span>、「インド各地の妖怪と精霊伝承」、インディアン・フォークロア・リサーチ、2022年6月5日</div>
+                            <a href="https://www.indianfolklore.org/" target="_blank" rel="noopener noreferrer" class="text-xs text-terracotta hover:underline break-all">https://www.indianfolklore.org/</a>
+                            <div class="text-[11px] text-parchment-600">参照日：2026年9月18日</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-terracotta/30 text-center">
+                <button onclick="closeBibModal()" class="px-6 py-2 bg-terracotta text-white rounded-lg font-bold hover:bg-terracotta/90 transition shadow-md">
+                    閉じる
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Full Dataset of 60 items across 6 regions
+        const mythData = [
+            // 北インド (North)
+            { id: 1, regionKey: 'north', regionName: '北インド', name: 'チュレル', category: '妖怪', location: 'ウッタル・プラデーシュ省、パンジャーブ州など', content: 'かかとが前後逆についており、美しい女性に化けて夜道を行く男性を惑わし血や精気を吸い取る女性の妖怪。', origin: '出産の際や妊娠中に不慮の死を遂げた女性の無念や無念の死に対する忌避感から生まれたとされる。', coords: { x: 370, y: 170 } },
+            { id: 2, regionKey: 'north', regionName: '北インド', name: 'ピシャーチャ', category: '妖怪', location: 'ヒマーチャル・プラデーシュ州など', content: '暗闇や墓場に棲み、人間の肉を喰らい、人間に取り憑いて狂気をもたらす恐ろしい鬼神・悪霊。', origin: 'ヴェーダ時代から伝わる暗闇への恐怖や、精神の異常状態を悪霊の仕業としたことから形成された。', coords: { x: 340, y: 130 } },
+            { id: 3, regionKey: 'north', regionName: '北インド', name: 'ヴィターラ（ベターラ）', category: '妖怪', location: 'カシミール地方など', content: '死体に乗り移って動かし、墓場や木にぶら下がって人を脅かすゾンビのような怪異。', origin: '適切な葬礼を受けられなかった死者への畏怖や、死体に関する怪談説話から生じた。', coords: { x: 310, y: 100 } },
+            { id: 4, regionKey: 'north', regionName: '北インド', name: 'ブラフマラークシャサ', category: '妖怪', location: 'ウッタル・プラデーシュ省などの聖地周辺', content: '知識を持ちながらも悪事を働いたり自慢したりしたブラフマン（婆羅門）の無念の死後、強大な魔力を得て人を襲う妖怪。', origin: '聖職者の戒律違反への警告や教訓として語り継がれた。', coords: { x: 410, y: 180 } },
+            { id: 5, regionKey: 'north', regionName: '北インド', name: 'ムンジヤ', category: '妖怪', location: 'マディヤ・プラデーシュ省との境界周辺', content: '聖糸の儀式（ウパナヤナ）を受けた後、結婚する前に亡くなった少年の霊。アシュヴァッタ（菩提樹）の木に棲み、通行人に石を投げる。', origin: '人生の通過儀礼を果たせずに死んだ若者の未練が伝承化された。', coords: { x: 380, y: 250 } },
+            { id: 6, regionKey: 'north', regionName: '北インド', name: 'シヴァ', category: '神様', location: 'ウッタラーカンド州（バドリナート、ケーダールナートなど）', content: '破壊と再生、瞑想を司る最高神の一柱。ヒマラヤ山脈のカイラス山に棲むとされる。', origin: '古代ヴェーダの暴風神ルドラや非ヴェーダ系の山岳崇拝が融合して誕生した。', coords: { x: 400, y: 140 } },
+            { id: 7, regionKey: 'north', regionName: '北インド', name: 'ヴィシュヌ', category: '神様', location: 'ウッタル・プラデーシュ省（マトゥラー、アヨーディヤ）', content: '宇宙の維持を司り、危機に直面すると化身（アヴァターラ）となって降臨する神。', origin: '太陽神としての側面を持つヴェーダ神が、民間の最高神崇拝を取り込んで体系化された。', coords: { x: 430, y: 210 } },
+            { id: 8, regionKey: 'north', regionName: '北インド', name: 'クリシュナ', category: '神様', location: 'ウッタル・プラデーシュ省マトゥラー', content: 'ヴィシュヌの第8の化身。愛、歓喜、知恵を司り、牧童として多くの奇跡を起こした。', origin: '地域的な牧童神崇拝がヴィシュヌ信仰と合一して形成された。', coords: { x: 360, y: 220 } },
+            { id: 9, regionKey: 'north', regionName: '北インド', name: 'ラーマ', category: '神様', location: 'ウッタル・プラデーシュ省アヨーディヤ', content: 'ヴィシュヌの第7の化身。正義（ダルマ）の模範であり、邪悪な王ラヴァナを倒した理想の王。', origin: '英雄叙事詩『ラーマーヤナ』の主人公が神格化された。', coords: { x: 450, y: 230 } },
+            { id: 10, regionKey: 'north', regionName: '北インド', name: 'ハンター（ガンガー）', category: '神様', location: 'ウッタラーカンド州（リシケシ、ハリドワール）', content: 'ガンジス川そのものを神格化した女神。罪を洗い流し解脱をもたらす。', origin: '天から降臨して死者の遺灰を清めたとされる川への自然崇拝から生まれた。', coords: { x: 380, y: 160 } },
+
+            // 中央インド (Central)
+            { id: 11, regionKey: 'central', regionName: '中央インド', name: 'ブータ', category: '妖怪', location: 'マディヤ・プラデーシュ省全域', content: '影を持たず、足が浮いており、人間に取り憑いて病気や狂気をもたらす霊的な怪異。', origin: '不慮の事故や凶死を遂げた者の霊がこの世にとどまるという恐れから生じた。', coords: { x: 400, y: 350 } },
+            { id: 12, regionKey: 'central', regionName: '中央インド', name: 'キチン', category: '妖怪', location: 'チャッティースガル省の山林部', content: '夜間に現れ、人間を誘い込んで迷子にさせたり、怪音を立てて精神を衰弱させたりする森の魔物。', origin: '未開拓の深い森における遭難や夜間の不気味な気配から生まれた。', coords: { x: 520, y: 390 } },
+            { id: 13, regionKey: 'central', regionName: '中央インド', name: 'バーン・マティ（魔女）', category: '妖怪', location: 'マディヤ・プラデーシュ省の農村部', content: '人々に呪いをかけ、家畜を病気にしたり作物を枯らしたりする不吉な老婆の妖怪。', origin: '村落社会での嫉妬や原因不明の不幸を外部に転嫁するためのスケープゴートから生まれた。', coords: { x: 380, y: 390 } },
+            { id: 14, regionKey: 'central', regionName: '中央インド', name: 'プレータ（餓鬼）', category: '妖怪', location: 'チャッティースガル省', content: '細い首と巨大なお腹を持ち、常にお腹を減らして苦しんでいる無念の霊。', origin: '先祖供養を怠ることへの戒めや、飢餓への恐怖から生まれた。', coords: { x: 500, y: 430 } },
+            { id: 15, regionKey: 'central', regionName: '中央インド', name: 'ラークシャサ（羅刹）', category: '妖怪', location: '中央インドの密林地帯', content: '人肉を好み、姿を自由に変えて夜間に暴れ回る恐ろしい鬼。', origin: '古代中央インドの先住民族に対する都市部からの恐怖や誤解が神話化した。', coords: { x: 450, y: 410 } },
+            { id: 16, regionKey: 'central', regionName: '中央インド', name: 'マハーカレシュワラ（シヴァの異名）', category: '神様', location: 'マディヤ・プラデーシュ省ウッジャイン', content: '時間と死を司る強い権能を持つシヴァ神の姿。', origin: '古代の天文観測の中心地であったウッジャインで、時間（カール）の支配者として祀られた。', coords: { x: 360, y: 340 } },
+            { id: 17, regionKey: 'central', regionName: '中央インド', name: 'ドゥルガー', category: '神様', location: 'チャッティースガル省', content: '神々の力を集めて作られた戦いの女神。多腕に武器を持ち、悪魔を撃破する。', origin: '母神信仰と戦神信仰が合流し、悪を倒す絶対的な神として形成された。', coords: { x: 530, y: 360 } },
+            { id: 18, regionKey: 'central', regionName: '中央インド', name: 'ナーガ（蛇神）', category: '神様', location: 'マディヤ・プラデーシュ省の水辺', content: '水や地下世界を司り、繁栄と豊穣、隠された財宝を守護する半人半蛇の神。', origin: '熱帯地域のコブラへの畏怖と、水に関わる生活の安全を祈るアニミズムから生まれた。', coords: { x: 420, y: 310 } },
+            { id: 19, regionKey: 'central', regionName: '中央インド', name: 'ハヌマーン', category: '神様', location: 'マディヤ・プラデーシュ省などの農村', content: '忠誠心と圧倒的な筋力を持つサル型の神。怪力、魔除け、病気平癒を司る。', origin: '古代の猿神崇拝が叙事詩『ラーマーヤナ』に取り込まれて大人気となった。', coords: { x: 470, y: 330 } },
+            { id: 20, regionKey: 'central', regionName: '中央インド', name: 'ハンサ神（水と鳥の神）', category: '神様', location: 'チャッティースガル省の湖沼地帯', content: '清らかな水と智恵を司り、善悪を見極める聖なる白鳥の姿をした神。', origin: '水鳥の観察力や清らかさを讃える信仰から生まれた。', coords: { x: 480, y: 450 } },
+
+            // 東インド (East)
+            { id: 21, regionKey: 'east', regionName: '東インド', name: 'ペッチー', category: '妖怪', location: '西ベンガル州・オリッサ州', content: '暗闇や墓場に現れ、恐ろしい声で叫びながら夜道を行く人を襲う女性の妖怪。', origin: '夜間の未開地や墓場に対する本能的な恐怖から具現化した。', coords: { x: 610, y: 330 } },
+            { id: 22, regionKey: 'east', regionName: '東インド', name: 'ニシ（呼び声の妖怪）', category: '妖怪', location: '西ベンガル州', content: '夜中に知人の声で名前を呼び、外へ誘い出して姿を消させる怪異。', origin: '夜間に外へ出ることの危険性や、夢遊病・失踪現象を説明するために誕生した。', coords: { x: 630, y: 300 } },
+            { id: 23, regionKey: 'east', regionName: '東インド', name: 'メショ・ブータ', category: '妖怪', location: '西ベンガル州の水郷地帯', content: '魚をこよなく愛する妖怪。夜釣りをしている人の前に現れ、魚を奪い取ったり脅したりする。', origin: '水郷地帯における夜間漁の危険防止や、魚の盗難を妖怪の仕業としたことによる。', coords: { x: 640, y: 340 } },
+            { id: 24, regionKey: 'east', regionName: '東インド', name: 'シャクチニ', category: '妖怪', location: '西ベンガル州の農村', content: '結婚したまま若くして亡くなった女性の霊。頭に朱の粉をつけ、人家の樹木に棲み着く。', origin: '若くして亡くなった花嫁への同情と、失われた幸福への執着が怪異化された。', coords: { x: 600, y: 280 } },
+            { id: 25, regionKey: 'east', regionName: '東インド', name: 'バーモ（竹の妖怪）', category: '妖怪', location: 'オリッサ州の竹林', content: '竹林に棲み、通行人が下を潜ろうとすると竹を折り曲げて押し潰す。', origin: 'しなる竹による事故や、風で竹が擦れ合う気味の悪い音から生じた。', coords: { x: 570, y: 380 } },
+            { id: 26, regionKey: 'east', regionName: '東インド', name: 'ジャガナート', category: '神様', location: 'オリッサ州プリー', content: '大きな目と不完全な手足を持つ独特な姿の神。宇宙の主とされる。', origin: '先住民（サヴァラ族）の木神崇拝がヒンドゥー教のヴィシュヌ信仰と合一した。', coords: { x: 590, y: 400 } },
+            { id: 27, regionKey: 'east', regionName: '東インド', name: 'カーリー', category: '神様', location: '西ベンガル州コルカタ', content: '黒い肌を持ち、生首のネックレスをかけた殺戮と死、そして母性を司る凄惨な女神。', origin: '先住民族の血生臭い母神信仰が道教・密教的要素を取り入れて確立された。', coords: { x: 640, y: 320 } },
+            { id: 28, regionKey: 'east', regionName: '東インド', name: 'タラー（ターラー女神）', category: '神様', location: '西ベンガル州ターラーピート', content: '慈悲深く、死の恐怖から信者を救い出す密教・ヒンドゥー教の女神。', origin: '仏教密教の女神信仰がヒンドゥー教のタントラ信仰と結合した。', coords: { x: 610, y: 270 } },
+            { id: 29, regionKey: 'east', regionName: '東インド', name: 'シュブラ（川の神）', category: '神様', location: 'オリッサ州の水域', content: '河川の水害を防ぎ、恵みの水を与える豊穣の神。', origin: '大雨やサイクロンによる水害が多い沿岸部での自然崇拝から生じた。', coords: { x: 560, y: 350 } },
+            { id: 30, regionKey: 'east', regionName: '東インド', name: 'マンサ（蛇女神）', category: '神様', location: '西ベンガル州', content: '毒蛇を従え、毒の被害から守る治癒と豊穣の女神。', origin: '毒蛇事故が多いデルタ地帯で、蛇の被害を逃れるための祈りから生まれた。', coords: { x: 620, y: 360 } },
+
+            // 北東部インド (North-East)
+            { id: 31, regionKey: 'northeast', regionName: '北東部インド', name: 'ハナ・バグ（魔女）', category: '妖怪', location: 'アッサム州', content: '黒魔術を操り、人に病気をもたらしたり夢に取り憑いてうなされたりさせる妖怪。', origin: '部族社会における病気や突然死の説明、黒魔術への恐れから生まれた。', coords: { x: 740, y: 280 } },
+            { id: 32, regionKey: 'northeast', regionName: '北東部インド', name: 'ブラー・ダングリヤ', category: '妖怪', location: 'アッサム州の森', content: '白い衣服を着てターバンを巻き、馬に乗って夜の森を巡回する老人の姿をした巨人の怪異。', origin: '森を守護する精霊への畏怖と、夜間の山林への立ち入り制限から生まれた。', coords: { x: 770, y: 270 } },
+            { id: 33, regionKey: 'northeast', regionName: '北東部インド', name: 'ジャル・クワイ（水妖）', category: '妖怪', location: 'アッサム州のブラマプトラ川流域', content: '川底に潜み、泳ぐ人の足を引っ張って溺死させる妖怪。', origin: '大河ブラマプトラ川の急流や渦潮による水難事故防止の教訓から。', coords: { x: 720, y: 300 } },
+            { id: 34, regionKey: 'northeast', regionName: '北東部インド', name: 'ピイ・ポー（竹林の精霊）', category: '妖怪', location: 'ミゾラム州', content: '竹林に棲み、奇妙な口笛の音を響かせて人を誘い込み迷子にさせる。', origin: '広大な竹林での道迷いや風が鳴らす音への警戒心から生じた。', coords: { x: 780, y: 360 } },
+            { id: 35, regionKey: 'northeast', regionName: '北東部インド', name: 'ケー・パ（人身獣頭の怪）', category: '妖怪', location: 'ナガランド州', content: '夜間に山村を襲い、家畜を喰らう変身能力を持った獣型の妖怪。', origin: '山岳地帯の肉食獣の恐怖と変身譚が組み合わさって誕生した。', coords: { x: 820, y: 310 } },
+            { id: 36, regionKey: 'northeast', regionName: '北東部インド', name: 'カマキヤ（カマーキャ女神）', category: '神様', location: 'アッサム州グワハティ', content: '女性の生殖力と大地の創造力を象徴する最古のタントラ神。', origin: '大地の肥沃さを女性の生理と結びつけた先住民の母神信仰が起源。', coords: { x: 750, y: 300 } },
+            { id: 37, regionKey: 'northeast', regionName: '北東部インド', name: 'ウマン・ライ（森の守護神）', category: '神様', location: 'マニプル州', content: '各集落や森を守護し、人々に恵みをもたらす部族の神々。', origin: 'メイテイ族の伝統的な精霊崇拝（ライ教）に基づき形成された。', coords: { x: 800, y: 330 } },
+            { id: 38, regionKey: 'northeast', regionName: '北東部インド', name: 'ドゥーニ・ポロ（太陽と月の神）', category: '神様', location: 'アルナーチャル・プラデーシュ州', content: '太陽（ドゥーニ）と月（ポロ）を万物の目・真理の象徴として祀る最高神。', origin: '厳しい自然の中で生きる部族が、天体への感謝と敬意から生み出した。', coords: { x: 810, y: 240 } },
+            { id: 39, regionKey: 'northeast', regionName: '北東部インド', name: 'バトー・ボライ（シヴァに似た最高神）', category: '神様', location: 'アッサム州（ボド族）', content: '万物を創造し、生命の調和を司る最重要神。', origin: 'ボド族の伝統的宗教観がヒンドゥー教のシヴァ神と融合した。', coords: { x: 710, y: 260 } },
+            { id: 40, regionKey: 'northeast', regionName: '北東部インド', name: 'セン・トランプ（財宝神）', category: '神様', location: 'トリプラ州', content: '山林の資源と財物、家庭の富を守る神。', origin: '山林からの恵みに対する感謝と家内繁栄の祈りから生まれた。', coords: { x: 740, y: 350 } },
+
+            // 西インド (West)
+            { id: 41, regionKey: 'west', regionName: '西インド', name: 'ムンジヤ（西インド伝承）', category: '妖怪', location: 'マハーラーシュトラ州・グジャラート州', content: 'ピパルの木（菩提樹）に棲み、夜中に通行人に石を投げつけたり頭の上から脅かしたりする。', origin: '元服後・結婚前に亡くなった少年の無念が木に留まると信じられた。', coords: { x: 280, y: 420 } },
+            { id: 42, regionKey: 'west', regionName: '西インド', name: 'ラヴァノ（海怪）', category: '妖怪', location: 'グジャラート州沿岸', content: '時化（しけ）の海に現れ、船をひっくり返そうとする巨大な水の怪異。', origin: 'アラビア海の荒波や航海の危険に対する船乗りたちの恐怖から生まれた。', coords: { x: 200, y: 340 } },
+            { id: 43, regionKey: 'west', regionName: '西インド', name: 'ハダル（女の悪霊）', category: '妖怪', location: 'マハーラーシュトラ州', content: '黄色い衣服を着て夜道に立ち、男性を魅了して死に至らしめる女性の妖怪。', origin: '過酷な家庭環境や病で非命の死を遂げた女性の怨念から語られた。', coords: { x: 290, y: 460 } },
+            { id: 44, regionKey: 'west', regionName: '西インド', name: 'チェトキン（魔女）', category: '妖怪', location: 'ゴーア州', content: '不気味な姿で深夜に現れ、子供に呪いをかけたり食べ物を腐らせたりする。', origin: '古い集落における病気の流行や原因不明の災難への恐れから生じた。', coords: { x: 300, y: 520 } },
+            { id: 45, regionKey: 'west', regionName: '西インド', name: 'ダンキン（吸血妖怪）', category: '妖怪', location: 'グジャラート州の農村', content: '目に見えない針で人間の血を吸い、衰弱させて死に至らしめる妖怪。', origin: '貧血症や伝染病による突然の体調不良を説明するために作られた。', coords: { x: 240, y: 320 } },
+            { id: 46, regionKey: 'west', regionName: '西インド', name: 'ガネーシャ', category: '神様', location: 'マハーラーシュトラ州（ムンバイ、プネー）', content: '象の頭と大きな腹を持つ神。障害を取り除き、富と学問をもたらす。', origin: '古代の象神崇拝が、シヴァとパールヴァティーの子としてヒンドゥー神話に体系化された。', coords: { x: 270, y: 440 } },
+            { id: 47, regionKey: 'west', regionName: '西インド', name: 'ヴィトバ（ヴィットラ神）', category: '神様', location: 'マハーラーシュトラ州パンダルプール', content: 'レンガの上に立ち、腰に手を当てて全信者を救済する身近なクリシュナの姿。', origin: 'カーストを超えたバクティ（虔信）運動の中から庶民の救済神として定着した。', coords: { x: 320, y: 480 } },
+            { id: 48, regionKey: 'west', regionName: '西インド', name: 'アンバー・マー（アンバー・マーター）', category: '神様', location: 'グジャラート州アムバジ', content: 'ライオンに乗り、あらゆる悪を打ち払う宇宙の母たる最高女神。', origin: '古来の母神信仰がシャクティ（女神エネルギー）信仰として最高神化された。', coords: { x: 230, y: 280 } },
+            { id: 49, regionKey: 'west', regionName: '西インド', name: 'シャーンティナート（ジャイナ教の聖者）', category: '神様', location: 'グジャラート州（ギルナール山）', content: '平和と解脱を司るジャイナ教第16代の勝者（ティールタンカラ）。', origin: '非暴力と苦行を貫いた実在の聖者が神格化された。', coords: { x: 220, y: 370 } },
+            { id: 50, regionKey: 'west', regionName: '西インド', name: 'シャンコーダル（海のヴィシュヌ）', category: '神様', location: 'グジャラート州ドゥワールカー', content: '海に潜む悪魔を倒し、法貝（シャンカ）を手にした海の護法神。', origin: '海上貿易が盛んなグジャラート沿岸部で、海運の安全を祈願して祀られた。', coords: { x: 190, y: 310 } },
+
+            // 南インド (South)
+            { id: 51, regionKey: 'south', regionName: '南インド', name: 'ヤクシ（ヤクシニー）', category: '妖怪', location: 'ケーララ州・タミル・ナードゥ州', content: 'パームヤシの木に棲み、絶世の美女に化けて男性を誘惑し、生き血を吸い骨だけにする。', origin: '自然の精霊信仰が後世に男を惑わす恐ろしい怪異として再解釈された。', coords: { x: 410, y: 680 } },
+            { id: 52, regionKey: 'south', regionName: '南インド', name: 'オディヤン', category: '妖怪', location: 'ケーララ州', content: '黒魔術を使って動物（牛や黒猫など）に変身し、闇に乗じてターゲットを襲う変身妖怪。', origin: '夜間の裏切りや暗殺事件への恐怖が、暗黒の魔術伝承と結びついた。', coords: { x: 390, y: 660 } },
+            { id: 53, regionKey: 'south', regionName: '南インド', name: 'カッタリ（切り裂き魔精霊）', category: '妖怪', location: 'タミル・ナードゥ州の山間部', content: '鎌を持って夜道を歩き、出くわした者の肉を切り取るとされる凶暴な霊。', origin: '夜間の山道における追ぎり（山賊）の恐怖が怪異化された。', coords: { x: 460, y: 640 } },
+            { id: 54, regionKey: 'south', regionName: '南インド', name: 'コルリ・ヴァーイ（火を吐く悪霊）', category: '妖怪', location: 'タミル・ナードゥ州', content: '口から火を吹きながら夜空を飛び、湿地帯や墓場を彷徨う不気味な妖怪。', origin: '湿地帯のウィルオウィスプ（鬼火・メタンガスの発光现象）から生じた。', coords: { x: 480, y: 670 } },
+            { id: 55, regionKey: 'south', regionName: '南インド', name: 'マダン（凶暴な精霊）', category: '妖怪', location: 'ケーララ州・タミル・ナードゥ州境界', content: '牛の角を持ち、深夜の辻に立って通過する者に重病を負わせる凶暴な存在。', origin: '村の境界や道端における邪気への恐れから祀られつつ警戒された。', coords: { x: 430, y: 700 } },
+            { id: 56, regionKey: 'south', regionName: '南インド', name: 'ムルガン（カルティケーヤ）', category: '神様', location: 'タミル・ナードゥ州全域', content: 'シヴァの息子であり、槍を携えて美と戦い、タミル語と文化を守護する最高神。', origin: '古代タミル文化の山の神「ムルガン」が、北インドの戦神神話と融合した。', coords: { x: 470, y: 620 } },
+            { id: 57, regionKey: 'south', regionName: '南インド', name: 'アイヤッパン', category: '神様', location: 'ケーララ州サバリマラ', content: 'シヴァとヴィシュヌ（モヒニの姿）の間に生まれた神。禁欲と戦い、願望成就を司る。', origin: 'シヴァ派とヴィシュヌ派の和解・融合を象徴する神として成立した。', coords: { x: 400, y: 640 } },
+            { id: 58, regionKey: 'south', regionName: '南インド', name: 'マリアンマン', category: '神様', location: 'タミル・ナードゥ州の農村', content: '天然痘や高熱病を及ぼし、またそれを治癒する慈悲と恐ろしさを併せ持つ雨と病の女神。', origin: '伝染病の恐怖と、それを鎮める雨への祈りから誕生した村落神。', coords: { x: 490, y: 610 } },
+            { id: 59, regionKey: 'south', regionName: '南インド', name: 'クリシュナ（ウドゥピの姿）', category: '神様', location: 'カルナータカ州ウドゥピ', content: '小さな子供の姿をしたクリシュナ。 churner（バター練り器）を持った愛らしい神。', origin: '13世紀の哲学者マドヴァが海上から救い出した像を祀ったことから発展した。', coords: { x: 370, y: 580 } },
+            { id: 60, regionKey: 'south', regionName: '南インド', name: 'ヴルシャバ（ナンディ）', category: '神様', location: 'カルナータカ州マイソール', content: 'シヴァの乗り物であり、強力な力と忠誠心、農耕の繁栄を司る聖なる牡牛の神。', origin: '農耕に不可欠な牡牛への深い感謝と自然崇拝から生まれた。', coords: { x: 420, y: 570 } }
+        ];
+
+        // State Management
+        let currentRegion = 'all';
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let isListView = false;
+
+        // Map Transform State
+        let scale = 1;
+        let pointX = 0;
+        let pointY = 0;
+        let startX = 0;
+        let startY = 0;
+        let isPanning = false;
+
+        // DOM Elements
+        const mapViewport = document.getElementById('mapViewport');
+        const mapGroup = document.getElementById('mapGroup');
+        const pinsGroup = document.getElementById('pinsGroup');
+        const cardsContainer = document.getElementById('cardsContainer');
+        const currentRegionTitle = document.getElementById('currentRegionTitle');
+        const resultCount = document.getElementById('resultCount');
+
+        // Application Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMapPins();
+            renderCards();
+            setupMapPanZoom();
+        });
+
+        // Interactive Map Pan & Zoom setup
+        function setupMapPanZoom() {
+            mapViewport.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isPanning = true;
+                startX = e.clientX - pointX;
+                startY = e.clientY - pointY;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isPanning) return;
+                pointX = e.clientX - startX;
+                pointY = e.clientY - startY;
+                updateMapTransform();
+            });
+
+            window.addEventListener('mouseup', () => {
+                isPanning = false;
+            });
+
+            mapViewport.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const xs = (e.clientX - pointX) / scale;
+                const ys = (e.clientY - pointY) / scale;
+                const delta = -e.deltaY;
+
+                (delta > 0) ? (scale *= 1.15) : (scale /= 1.15);
+                scale = Math.min(Math.max(0.7, scale), 3.5);
+
+                pointX = e.clientX - xs * scale;
+                pointY = e.clientY - ys * scale;
+
+                updateMapTransform();
+            }, { passive: false });
+
+            // Touch Drag / Pinch for mobile devices
+            let touchStartX = 0;
+            let touchStartY = 0;
+            mapViewport.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    isPanning = true;
+                    touchStartX = e.touches[0].clientX - pointX;
+                    touchStartY = e.touches[0].clientY - pointY;
+                }
+            });
+
+            mapViewport.addEventListener('touchmove', (e) => {
+                if (isPanning && e.touches.length === 1) {
+                    pointX = e.touches[0].clientX - touchStartX;
+                    pointY = e.touches[0].clientY - touchStartY;
+                    updateMapTransform();
+                }
+            });
+
+            mapViewport.addEventListener('touchend', () => {
+                isPanning = false;
+            });
+        }
+
+        function updateMapTransform() {
+            mapGroup.setAttribute('transform', `translate(${pointX}, ${pointY}) scale(${scale})`);
+        }
+
+        function zoomMap(factor) {
+            scale *= factor;
+            scale = Math.min(Math.max(0.7, scale), 3.5);
+            updateMapTransform();
+        }
+
+        function resetMapTransform() {
+            scale = 1;
+            pointX = 0;
+            pointY = 0;
+            updateMapTransform();
+        }
+
+        // Render Map Pins
+        function renderMapPins() {
+            pinsGroup.innerHTML = '';
+            const filtered = getFilteredData();
+
+            filtered.forEach(item => {
+                const isYokai = item.category === '妖怪';
+                const pinColor = isYokai ? '#7E22CE' : '#D97706';
+                const iconClass = isYokai ? 'fa-ghost' : 'fa-sun';
+
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'pin-hover cursor-pointer');
+                g.setAttribute('transform', `translate(${item.coords.x}, ${item.coords.y})`);
+                g.onclick = (e) => {
+                    e.stopPropagation();
+                    scrollToCard(item.id);
+                };
+
+                g.innerHTML = `
+                    <circle cx="0" cy="0" r="14" fill="${pinColor}" stroke="#FAF6EE" stroke-width="2"/>
+                    <foreignObject x="-10" y="-10" width="20" height="20" pointer-events="none">
+                        <div class="w-full h-full flex items-center justify-center text-white text-[10px]">
+                            <i class="fa-solid ${iconClass}"></i>
+                        </div>
+                    </foreignObject>
+                    <title>${item.name} (${item.category}) - ${item.location}</title>
+                `;
+                pinsGroup.appendChild(g);
+            });
+        }
+
+        // Filter Data Helper
+        function getFilteredData() {
+            return mythData.filter(item => {
+                const matchesRegion = (currentRegion === 'all' || item.regionKey === currentRegion);
+                const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
+                const matchesSearch = searchQuery === '' || 
+                    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.origin.toLowerCase().includes(searchQuery.toLowerCase());
+
+                return matchesRegion && matchesCategory && matchesSearch;
+            });
+        }
+
+        // Render Cards in Side Panel
+        function renderCards() {
+            cardsContainer.innerHTML = '';
+            const filtered = getFilteredData();
+
+            resultCount.textContent = `${filtered.length}件`;
+
+            if (filtered.length === 0) {
+                cardsContainer.innerHTML = `
+                    <div class="text-center py-12 text-parchment-600">
+                        <i class="fa-solid fa-feather text-3xl mb-2 text-terracotta/40"></i>
+                        <p class="font-bold">該当する伝承が見つかりませんでした。</p>
+                        <p class="text-xs">検索条件を変更してお試しください。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const isYokai = item.category === '妖怪';
+                const badgeBg = isYokai ? 'bg-purple-100 text-purple-900 border-purple-300' : 'bg-amber-100 text-amber-900 border-amber-300';
+                const badgeIcon = isYokai ? 'fa-ghost text-purple-700' : 'fa-sun text-amber-600';
+
+                const card = document.createElement('div');
+                card.id = `card-${item.id}`;
+                card.className = "bg-parchment-50 rounded-xl p-4 border border-terracotta/30 shadow-sm hover:shadow-md transition-all hover:border-terracotta relative overflow-hidden group";
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs px-2 py-0.5 rounded-full border ${badgeBg} font-bold flex items-center gap-1">
+                                <i class="fa-solid ${badgeIcon}"></i>
+                                ${item.category}
+                            </span>
+                            <span class="text-xs font-bold text-terracotta font-cinzel tracking-wider bg-parchment-200 px-2 py-0.5 rounded">
+                                ${item.regionName}
+                            </span>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-lg text-parchment-900 font-mincho border-b border-terracotta/20 pb-1 mb-2 group-hover:text-terracotta transition">
+                        ${item.name}
+                    </h3>
+
+                    <div class="text-xs text-parchment-700 mb-2 flex items-start gap-1.5 bg-parchment-200/40 p-2 rounded-lg">
+                        <i class="fa-solid fa-location-dot text-terracotta mt-0.5 shrink-0"></i>
+                        <div>
+                            <span class="font-bold text-parchment-800">場所:</span> ${item.location}
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-parchment-800 leading-relaxed mb-3">
+                        <span class="font-bold text-terracotta block mb-0.5">【内容】</span>
+                        ${item.content}
+                    </div>
+
+                    <div class="text-xs text-parchment-700 leading-relaxed bg-parchment-100 p-2.5 rounded-lg border-l-2 border-terracotta">
+                        <span class="font-bold text-terracotta block mb-0.5">【誕生経緯】</span>
+                        ${item.origin}
+                    </div>
+                `;
+
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        // Region Selection Handler
+        function selectRegion(regionKey) {
+            currentRegion = regionKey;
+            
+            document.querySelectorAll('.region-path').forEach(el => el.classList.remove('active'));
+            if (regionKey !== 'all') {
+                const regionEl = document.querySelector(`#region-${regionKey} .region-path`);
+                if (regionEl) regionEl.classList.add('active');
+            }
+
+            const regionNames = {
+                'all': 'すべての地域説話',
+                'north': '北インド (North India)',
+                'central': '中央インド (Central India)',
+                'east': '東インド (East India)',
+                'northeast': '北東部インド (North-East India)',
+                'west': '西インド (West India)',
+                'south': '南インド (South India)'
+            };
+
+            currentRegionTitle.textContent = regionNames[regionKey] || '選択地域説話';
+            
+            renderMapPins();
+            renderCards();
+        }
+
+        // Filter Handlers
+        function setCategoryFilter(category) {
+            currentCategory = category;
+
+            ['all', 'yokai', 'god'].forEach(cat => {
+                const btn = document.getElementById(`filter-${cat}`);
+                if (btn) {
+                    btn.classList.remove('bg-terracotta', 'text-white');
+                    btn.classList.add('bg-parchment-50', 'text-parchment-800');
+                }
+            });
+
+            const activeBtn = document.getElementById(`filter-${category === '妖怪' ? 'yokai' : (category === '神様' ? 'god' : 'all')}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-terracotta', 'text-white');
+                activeBtn.classList.remove('bg-parchment-50', 'text-parchment-800');
+            }
+
+            renderMapPins();
+            renderCards();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value;
+            renderMapPins();
+            renderCards();
+        }
+
+        function scrollToCard(id) {
+            renderCards();
+            const cardEl = document.getElementById(`card-${id}`);
+            if (cardEl) {
+                cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                cardEl.classList.add('ring-2', 'ring-terracotta', 'bg-parchment-200');
+                setTimeout(() => {
+                    cardEl.classList.remove('ring-2', 'ring-terracotta', 'bg-parchment-200');
+                }, 2000);
+            }
+        }
+
+        function toggleViewMode() {
+            isListView = !isListView;
+            const mapViewContainer = document.getElementById('mapViewContainer');
+            const viewBtnText = document.getElementById('viewBtnText');
+
+            if (isListView) {
+                mapViewContainer.classList.add('hidden');
+                viewBtnText.textContent = '地図表示に切替';
+            } else {
+                mapViewContainer.classList.remove('hidden');
+                viewBtnText.textContent = 'リスト一覧表示';
+            }
+        }
+
+        // Modal Controls
+        function openBibModal() {
+            document.getElementById('bibModal').classList.remove('hidden');
+        }
+
+        function closeBibModal() {
+            document.getElementById('bibModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
